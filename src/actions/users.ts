@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { IAuthData } from "@/app/account/page";
 
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = "NEXTJS_LEARN_APP_SECRET_KEY";
 
 export const loginAction = async (email: string, password: string) => {
   try {
