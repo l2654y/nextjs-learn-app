@@ -8,32 +8,39 @@ import { IAuthData } from "@/app/account/page";
 const jwtSecret = process.env.JWT_SECRET;
 
 export const loginAction = async (email: string, password: string) => {
-  const users = await sql.query(
-    "SELECT * FROM users WHERE email = $1 AND password = $2",
-    [email, md5(password)]
-  );
-  if (users.length) {
-    const user = users[0];
-
-    const token = jwt.sign(
-      {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-      jwtSecret as string,
-      { expiresIn: "1h" }
+  try {
+    const users = await sql.query(
+      "SELECT * FROM users WHERE email = $1 AND password = $2",
+      [email, md5(password)]
     );
+    if (users.length) {
+      const user = users[0];
 
-    (await cookies()).set({
-      name: "auth_token",
-      value: token,
-      httpOnly: true,
-    });
+      const token = jwt.sign(
+        {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+        jwtSecret as string,
+        { expiresIn: "1h" }
+      );
 
-    return { status: 200, message: "Login successful" };
-  } else {
-    return { status: 401, message: "Login failed" };
+      (await cookies()).set({
+        name: "auth_token",
+        value: token,
+        httpOnly: true,
+      });
+
+      return { status: 200, message: "Login successful" };
+    } else {
+      return { status: 401, message: "Login failed" };
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
   }
 };
 export const registerAction = async (
