@@ -45,10 +45,10 @@ function Login({ setNotAccountType }: ILoginProps) {
       const result = await loginAction(res.email, res.password);
       setErrMessages({ email: [], password: [] });
       if (result.status !== 200) {
-        toast.error(result.message);
+        toast.error(result.message as string);
         return;
       }
-      toast.success(result.message);
+      toast.success(result.message as string);
       formRef.current?.reset();
     } catch (error) {
       if (error instanceof z.ZodError) {
